@@ -5,17 +5,14 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
-const EMPTY_STRING = ""
-
-var (
-	// ErrInvalidRange - error when we have a rating range validation issue
+const (
+	CheckedIn             = "CheckedIn"
+	CheckedOut            = "CheckedOut"
+	BlankString           = ""
+	ErrInvalidDate        = "Error: invalid date entry"
+	ErrInvalidEntry       = "Error: invalid text entry"
 	ErrInvalidRatingRange = "Error: invalid rating range"
-	// ErrInvalidEntry - error when we have an invalid entry on any field
-	ErrInvalidEntry = "Error: invalid text entry"
-	// ErrInvalidDate - error when we have an invalid publish date entry
-	ErrInvalidDate = "Error: invalid date entry"
-	// ErrInvalidStatus - error when we have an invalid status entry
-	ErrInvalidStatus = "Error: invalid status entry"
+	ErrInvalidStatus      = "Error: invalid status entry"
 )
 
 // Validate - implementation of the InputValidation interface
@@ -44,12 +41,12 @@ func Validate(b models.Book) string {
 		return ErrInvalidDate
 	}
 
-	return EMPTY_STRING
+	return BlankString
 }
 
 func StringEntryValidator(s string) bool {
 	// validate the entry is not empty or missing
-	if govalidator.IsNull(s) || s == EMPTY_STRING || govalidator.HasWhitespaceOnly(s) {
+	if govalidator.IsNull(s) || s == BlankString || govalidator.HasWhitespaceOnly(s) {
 		return true
 	}
 
@@ -58,7 +55,7 @@ func StringEntryValidator(s string) bool {
 
 func StatusValidator(s string) bool {
 	// validate the entry is not empty or missing
-	if StringEntryValidator(s) || (s != "CheckedIn" && s != "CheckedOut") {
+	if StringEntryValidator(s) || (s != CheckedIn && s != CheckedOut) {
 		return true
 	}
 

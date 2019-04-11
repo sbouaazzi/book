@@ -1,6 +1,7 @@
 version: '3.3'
 services:
 
+  #api service
   api:
     image: bookapi
     build: .
@@ -13,7 +14,7 @@ services:
     networks:
       - api-net
 
-
+  #mongodb service
   mongodb:
     image: mongo
     ports:
@@ -22,8 +23,10 @@ services:
       - "mongodata:/data/db"
     networks:
       - api-net
+
 volumes:
   mongodata:
+
 networks:
   api-net:
     driver: bridge

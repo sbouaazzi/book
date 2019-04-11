@@ -21,6 +21,26 @@ func NewBookController(s *mgo.Session) *BookController {
 }
 
 //The GetBook function
+func (bc BookController) GetAllBooks(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	var b []models.Book
+
+	if err := bc.session.DB("BookMongo").C("books").Find(nil).All(&b); err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	bj, err := json.Marshal(b)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) // 200
+	fmt.Fprintf(w, "%s\n", bj)
+}
+
+//The GetBook function
 func (bc BookController) GetBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	id := p.ByName("id")
 

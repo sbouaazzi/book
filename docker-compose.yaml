@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+
+  api:
+    image: bookapi
+    build: .
+    ports:
+      - "8080:8080"
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    networks:
+      - api-net
+
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongodata:/data/db"
+    networks:
+      - api-net
+volumes:
+  mongodata:
+networks:
+  api-net:
+    driver: bridge

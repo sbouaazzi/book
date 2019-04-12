@@ -1,167 +1,136 @@
 package controllers
 
 import (
+	dao2 "book/dao"
 	"book/models"
 	"encoding/json"
-	"fmt"
-	"github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
+	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"net/http"
 )
 
 const (
-	ApplicationJSON  = "application/json"
-	CollectionName   = "books"
-	ContentType      = "Content-Type"
-	DatabaseName     = "BookMongo"
-	DeletedIdMessage = "Deleted book id "
-	Error            = "Error: "
-	EmptyString      = ""
-	Format           = "%s\n"
-	ID               = "id"
-	NewLine          = "\n"
+	ApplicationJSON   = "application/json"
+	ContentType       = "Content-Type"
+	DatabaseName      = "BookMongo"
+	DatabaseServerUrl = "mongodb://book_mongodb_1:27017"
+	Error             = "Error: "
+	EmptyString       = ""
+	Format            = "%s\n"
+	ID                = "id"
+	Result            = "Result"
+	Success           = "Success"
 )
 
-//The BookController struct containing the session of the model Book
-type BookController struct {
-	session *mgo.Session
-}
+var dao = dao2.BookDAO{Server: DatabaseServerUrl, Database: DatabaseName}
 
-//The NewBookController function
-func NewBookController(s *mgo.Session) *BookController {
-	return &BookController{s}
+//The GetBook function
+func GetAllBooks(w http.ResponseWriter, _ *http.Request) {
+	books, err := dao.FindAll()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	log.Println("Retrieved all books")
+
+	respondWithJson(w, http.StatusOK, books)
 }
 
 //The GetBook function
-func (bc BookController) GetAllBooks(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func GetBook(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	book, err := dao.FindById(params["id"])
 
-	var b []models.Book
-
-	if err := bc.session.DB(DatabaseName).C(CollectionName).Find(nil).All(&b); err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	bj, err := json.Marshal(b)
 	if err != nil {
-		log.Panic(Error, err.Error())
-	}
-
-	w.Header().Set(ContentType, ApplicationJSON)
-	w.WriteHeader(http.StatusOK) // 200
-	_, _ = fmt.Fprintf(w, Format, bj)
-}
-
-//The GetBook function
-func (bc BookController) GetBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName(ID)
-
-	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(http.StatusNotFound) // 404
+		respondWithError(w, http.StatusBadRequest, "Invalid Book ID")
 		return
 	}
+	log.Println("Retrieved book with record id: " + book.Id)
 
-	oid := bson.ObjectIdHex(id)
-
-	b := models.Book{}
-
-	if err := bc.session.DB(DatabaseName).C(CollectionName).FindId(oid).One(&b); err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	bj, err := json.Marshal(b)
-	if err != nil {
-		log.Panic(Error, err.Error())
-	}
-
-	w.Header().Set(ContentType, ApplicationJSON)
-	w.WriteHeader(http.StatusOK) // 200
-	_, _ = fmt.Fprintf(w, Format, bj)
+	respondWithJson(w, http.StatusOK, book)
 }
 
 //The CreateBook function
-func (bc BookController) CreateBook(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	b := models.Book{}
-
-	_ = json.NewDecoder(r.Body).Decode(&b)
-
-	errorMsg := Validate(b)
-	if errorMsg != EmptyString {
-		w.Header().Set(ContentType, ApplicationJSON)
-		w.WriteHeader(http.StatusBadRequest) // 400
-		_, _ = fmt.Fprintf(w, Format, errorMsg)
+func CreateBook(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	var book models.Book
+	if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	b.Id = bson.NewObjectId()
-
-	_ = bc.session.DB(DatabaseName).C(CollectionName).Insert(b)
-
-	bj, err := json.Marshal(b)
-	if err != nil {
-		log.Panic(Error, err.Error())
+	errorMsg := Validate(book)
+	if errorMsg != EmptyString {
+		respondWithError(w, http.StatusBadRequest, errorMsg)
+		return
 	}
 
-	w.Header().Set(ContentType, ApplicationJSON)
-	w.WriteHeader(http.StatusOK) // 200
-	_, _ = fmt.Fprintf(w, Format, bj)
+	book.Id = bson.NewObjectId()
+
+	if err := dao.Insert(book); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	log.Println("Created book with record id: " + book.Id)
+
+	respondWithJson(w, http.StatusOK, book)
 }
 
 //The UpdateBook function
-func (bc BookController) UpdateBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	b := models.Book{}
-	id := p.ByName(ID)
-	oid := bson.ObjectIdHex(id)
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	oldbook, _ := dao.FindById(params["id"])
 
-	_ = json.NewDecoder(r.Body).Decode(&b)
+	defer r.Body.Close()
+	var book models.Book
+	if err := json.NewDecoder(r.Body).Decode(&book); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
 
-	errorMsg := Validate(b)
+	book.Id = oldbook.Id
+
+	errorMsg := Validate(book)
 	if errorMsg != EmptyString {
-		w.Header().Set(ContentType, ApplicationJSON)
-		w.WriteHeader(http.StatusBadRequest) // 400
-		_, _ = fmt.Fprintf(w, Format, errorMsg)
+		respondWithError(w, http.StatusBadRequest, errorMsg)
 		return
 	}
 
-	b.Id = bson.ObjectIdHex(id)
-
-	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(http.StatusNotFound)
+	if err := dao.Update(book); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	log.Println("Updated book with record id: " + book.Id)
 
-	_ = bc.session.DB(DatabaseName).C(CollectionName).UpdateId(oid, &b)
-
-	bj, err := json.Marshal(b)
-	if err != nil {
-		log.Panic(Error, err.Error())
-	}
-
-	w.Header().Set(ContentType, ApplicationJSON)
-	w.WriteHeader(http.StatusOK) // 200
-	_, _ = fmt.Fprintf(w, Format, bj)
+	respondWithJson(w, http.StatusOK, book)
 }
 
 //The DeleteBook Function
-func (bc BookController) DeleteBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName(ID)
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	book, err := dao.FindById(params["id"])
 
-	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(http.StatusNotFound)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Book ID")
 		return
 	}
 
-	oid := bson.ObjectIdHex(id)
-
-	// Delete user
-	if err := bc.session.DB(DatabaseName).C(CollectionName).RemoveId(oid); err != nil {
-		w.WriteHeader(http.StatusNotFound)
+	if err := dao.Delete(book); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	log.Println("Deleted book with record id: " + book.Id)
+	respondWithJson(w, http.StatusOK, map[string]string{Result: Success})
+}
 
-	w.WriteHeader(http.StatusOK) // 200
-	_, _ = fmt.Fprint(w, DeletedIdMessage, oid, NewLine)
+func respondWithError(w http.ResponseWriter, code int, msg string) {
+	respondWithJson(w, code, map[string]string{"error": msg})
+}
+
+func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+	w.Header().Set(ContentType, ApplicationJSON)
+	w.WriteHeader(code)
+	_, _ = w.Write(response)
 }

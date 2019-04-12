@@ -8,7 +8,7 @@ ADD . /go/src/book
 # Build the book command inside the container
 # Fetch and manage dependencies
 RUN go get github.com/asaskevich/govalidator
-RUN go get github.com/julienschmidt/httprouter
+RUN go get github.com/gorilla/mux
 RUN go get gopkg.in/mgo.v2
 RUN go get gopkg.in/mgo.v2/bson
 RUN go install book

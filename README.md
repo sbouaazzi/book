@@ -142,7 +142,7 @@ In order to run this project from a docker container, please follow the followin
 * Open the project from any IDE
 * From the terminal, navigate to the main /book directory
 * In the terminal from that directory, run the command _docker-compose up --build_
-* This command will build the MongoDB and Book AP Go source images and run the containers
+* This command will build the MongoDB and Book API Go source images and run the containers
 * When the build is complete, and the containers are running, now access the API running on port 8080
 * Use cURL or PostMan to test the API
 

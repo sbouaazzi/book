@@ -145,4 +145,5 @@ In order to run this project from a docker container, please follow the followin
 * This command will build the MongoDB and Book API Go source images and run the containers
 * When the build is complete, and the containers are running, now access the API running on port 8080
 * Use cURL or PostMan to test the API
+* To run the unit tests, access the book directory in the terminal, and run the command _go test controllers/book_test.go_
 

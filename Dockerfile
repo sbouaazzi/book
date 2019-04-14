@@ -6,7 +6,7 @@ FROM golang:latest
 ADD . /go/src/book
 
 # Build the book command inside the container
-# Fetch and manage dependencies
+# Fetch and manage dependencies manually with 'RUN go get' commands
 RUN go get github.com/asaskevich/govalidator
 RUN go get github.com/gorilla/mux
 RUN go get gopkg.in/mgo.v2

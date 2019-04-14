@@ -5,10 +5,10 @@
 //
 // The main Validate method splits up into 4 separate methods in order to validate the different attribute data types and rules.
 // The validations include:
-//			-Rating number range must be 1-3
-//			-Status values equal either "CheckedIn" or "CheckedOut"
-//			-Title, Author, and Publisher are not blank or empty values
-//			-Publisher Date is not blank or empty and a numeric value
+//			-Rating value range must be 1-3
+//			-Status value equals either "CheckedIn" or "CheckedOut" and not blank or empty values with case sensitivity
+//			-Title, Author, and Publisher values are not blank or empty values
+//			-Publisher Date value is not blank or empty and a numeric value
 
 package controllers
 
@@ -21,7 +21,7 @@ import (
 const (
 	CheckedIn             = "CheckedIn"
 	CheckedOut            = "CheckedOut"
-	ErrInvalidDate        = "Invalid publish date entry. Value must be a numeric year, and not be blank or empty."
+	ErrInvalidDate        = "Invalid publish date entry. Value must be a numeric 4 digit year, and not be blank or empty."
 	ErrInvalidRatingRange = "Invalid rating range. Value range must be from 1-3."
 	ErrInvalidStatus      = "Invalid status entry. Value must be either 'CheckedIn' or 'CheckedOut', and not be blank or empty."
 	ErrInvalidTextEntry   = "Invalid text entry. Values must not be blank or empty."
@@ -33,7 +33,7 @@ const (
 // Validates a book record from the given parameter.
 // The validations include:
 //			-Rating value range must be 1-3
-//			-Status value equals either "CheckedIn" or "CheckedOut" and not blank or empty values
+//			-Status value equals either "CheckedIn" or "CheckedOut" and not blank or empty values with case sensitivity
 //			-Title, Author, and Publisher values are not blank or empty values
 //			-Publisher Date value is not blank or empty and a numeric value
 //
@@ -119,7 +119,7 @@ func RatingValidator(i int) bool {
 // The validation includes that the publish date is not blank, null or empty values.
 // The function returns a boolean. True if a validation error is found, false if not.
 func PublishDateValidator(s string) bool {
-	if StringEntryValidator(s) || !govalidator.IsNumeric(s) {
+	if StringEntryValidator(s) || !govalidator.IsNumeric(s) || (len(s) != 4) {
 		return true
 	}
 

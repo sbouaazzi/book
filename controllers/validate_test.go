@@ -62,14 +62,14 @@ func TestValidate(t *testing.T) {
 		{
 			name: Not + ValidTest1,
 			args: args{
-				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "ABCD", Rating: 3, Status: "CheckedOut"},
+				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "ABCD", Rating: 3, Status: CheckedOut},
 			},
 			want: ErrInvalidDate,
 		},
 		{
 			name: Not + ValidTest2,
 			args: args{
-				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Status: "CheckedIn"},
+				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Status: CheckedIn},
 			},
 			want: ErrInvalidRatingRange,
 		},
@@ -83,7 +83,7 @@ func TestValidate(t *testing.T) {
 		{
 			name: "NotValidTest4",
 			args: args{
-				models.Book{Id: "12345", Author: "An Author", PublishDate: "1234", Rating: 1, Status: "CheckedIn"},
+				models.Book{Id: "12345", Author: "An Author", PublishDate: "1234", Rating: 1, Status: CheckedIn},
 			},
 			want: ErrInvalidTextEntry,
 		},

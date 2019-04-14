@@ -19,6 +19,18 @@ import (
 	"testing"
 )
 
+// constants definitions
+const (
+	Not        = "Not"
+	ValidTest1 = "ValidTest1"
+	ValidTest2 = "ValidTest2"
+	ValidTest3 = "ValidTest3"
+	ValidTest4 = "ValidTest4"
+	ValidTest5 = "ValidTest5"
+	ValidTest6 = "ValidTest6"
+	ValidTest7 = "ValidTest7"
+)
+
 // TestValidate function
 // @param t - reference to testing.T object
 //
@@ -34,35 +46,35 @@ func TestValidate(t *testing.T) {
 	}{
 		// Test cases for validating book objects
 		{
-			name: "ValidTest1",
+			name: ValidTest1,
 			args: args{
-				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Rating: 1, Status: "CheckedIn"},
+				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Rating: 1, Status: CheckedIn},
 			},
-			want: "",
+			want: EmptyString,
 		},
 		{
-			name: "ValidTest2",
+			name: ValidTest2,
 			args: args{
-				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Rating: 3, Status: "CheckedOut"},
+				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Rating: 3, Status: CheckedOut},
 			},
-			want: "",
+			want: EmptyString,
 		},
 		{
-			name: "NotValidTest1",
+			name: Not + ValidTest1,
 			args: args{
 				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "ABCD", Rating: 3, Status: "CheckedOut"},
 			},
 			want: ErrInvalidDate,
 		},
 		{
-			name: "NotValidTest2",
+			name: Not + ValidTest2,
 			args: args{
 				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Status: "CheckedIn"},
 			},
 			want: ErrInvalidRatingRange,
 		},
 		{
-			name: "NotValidTest3",
+			name: Not + ValidTest3,
 			args: args{
 				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "1234", Rating: 2, Status: "checkedin"},
 			},
@@ -76,21 +88,21 @@ func TestValidate(t *testing.T) {
 			want: ErrInvalidTextEntry,
 		},
 		{
-			name: "NotValidTest5",
+			name: Not + ValidTest5,
 			args: args{
 				models.Book{Status: "CHeCkEDouT"},
 			},
 			want: ErrInvalidTextEntry,
 		},
 		{
-			name: "NotValidTest6",
+			name: Not + ValidTest6,
 			args: args{
 				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "ABCDE", Status: "CHeCkEDouT"},
 			},
 			want: ErrInvalidRatingRange,
 		},
 		{
-			name: "NotValidTest7",
+			name: Not + ValidTest7,
 			args: args{
 				models.Book{Id: "12345", Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "ABCDE", Rating: 3, Status: "CHeCkEDiN"},
 			},
@@ -121,42 +133,42 @@ func TestStringEntryValidator(t *testing.T) {
 	}{
 		// Test cases for validating string values
 		{
-			name: "ValidTest1",
+			name: ValidTest1,
 			args: args{
 				"A Text Value",
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest2",
+			name: ValidTest2,
 			args: args{
 				"12345",
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest3",
+			name: ValidTest3,
 			args: args{
 				"ABCDE",
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest4",
+			name: ValidTest4,
 			args: args{
 				"@@@##*",
 			},
 			want: false,
 		},
 		{
-			name: "NotValidTest1",
+			name: Not + ValidTest1,
 			args: args{
 				"",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest2",
+			name: Not + ValidTest2,
 			args: args{
 				"	",
 			},
@@ -187,63 +199,63 @@ func TestStatusValidator(t *testing.T) {
 	}{
 		// Test cases for validating status string values
 		{
-			name: "ValidTest1",
+			name: ValidTest1,
 			args: args{
-				"CheckedIn",
+				CheckedIn,
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest2",
+			name: ValidTest2,
 			args: args{
-				"CheckedOut",
+				CheckedOut,
 			},
 			want: false,
 		},
 		{
-			name: "NotValidTest1",
+			name: Not + ValidTest1,
 			args: args{
 				"checkedin",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest2",
+			name: Not + ValidTest2,
 			args: args{
 				"checkedout",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest3",
+			name: Not + ValidTest3,
 			args: args{
 				"CHECKEDIN",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest4",
+			name: Not + ValidTest4,
 			args: args{
 				"CHECKEDOUT",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest5",
+			name: Not + ValidTest5,
 			args: args{
 				"   ",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest6",
+			name: Not + ValidTest6,
 			args: args{
 				"",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest6",
+			name: Not + ValidTest7,
 			args: args{
 				"12345",
 			},
@@ -274,49 +286,49 @@ func TestRatingValidator(t *testing.T) {
 	}{
 		// Test cases for validating rating number values
 		{
-			name: "ValidTest1",
+			name: ValidTest1,
 			args: args{
 				1,
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest2",
+			name: ValidTest2,
 			args: args{
 				2,
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest3",
+			name: ValidTest3,
 			args: args{
 				3,
 			},
 			want: false,
 		},
 		{
-			name: "NotValidTest1",
+			name: Not + ValidTest1,
 			args: args{
 				0,
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest2",
+			name: Not + ValidTest2,
 			args: args{
 				4,
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest3",
+			name: Not + ValidTest3,
 			args: args{
 				-3,
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest4",
+			name: Not + ValidTest4,
 			args: args{
 				100,
 			},
@@ -347,63 +359,63 @@ func TestPublishDateValidator(t *testing.T) {
 	}{
 		// Test cases for validating publish date string values
 		{
-			name: "ValidTest1",
+			name: ValidTest1,
 			args: args{
 				"1960",
 			},
 			want: false,
 		},
 		{
-			name: "ValidTest2",
+			name: ValidTest2,
 			args: args{
 				"2019",
 			},
 			want: false,
 		},
 		{
-			name: "NotValidTest1",
+			name: Not + ValidTest1,
 			args: args{
 				"ABCD",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest2",
+			name: Not + ValidTest2,
 			args: args{
 				"2015A",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest3",
+			name: Not + ValidTest3,
 			args: args{
 				"20152",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest4",
+			name: Not + ValidTest4,
 			args: args{
 				"",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest5",
+			name: Not + ValidTest5,
 			args: args{
 				"   ",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest6",
+			name: Not + ValidTest6,
 			args: args{
 				"!!@@",
 			},
 			want: true,
 		},
 		{
-			name: "NotValidTest7",
+			name: Not + ValidTest7,
 			args: args{
 				"201",
 			},

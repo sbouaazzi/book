@@ -26,8 +26,8 @@ This repository contains a CRUD API to manage a list of Books
                 "rating": 1,
                 "status": "CheckedIn"
             } 
-    ]
-        ```
+        ]
+         ```
     * example **400** response:
         ```
             {

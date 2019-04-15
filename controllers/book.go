@@ -35,8 +35,8 @@ const (
 	Id                       = "id"
 	Result                   = "Result"
 	RetrievedAllBooksMsg     = "Retrieved all books"
-	Success                  = "Success"
 	RetrievedBookMsg         = "Retrieved book with record id: "
+	Success                  = "Success"
 	UpdatedBookMsg           = "Updated book with record id: "
 )
 
@@ -79,7 +79,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, InvalidBookIdMsg)
 		return
 	}
-	log.Println(RetrievedBookMsg + book.Id)
+	log.Println(RetrievedBookMsg + book.Id.Hex())
 
 	respondWithJson(w, http.StatusOK, book)
 }
@@ -113,7 +113,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println(CreatedBookMsg + book.Id)
+	log.Println(CreatedBookMsg + book.Id.Hex())
 
 	respondWithJson(w, http.StatusOK, book)
 }
@@ -151,7 +151,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println(UpdatedBookMsg + book.Id)
+	log.Println(UpdatedBookMsg + book.Id.Hex())
 
 	respondWithJson(w, http.StatusOK, book)
 }
@@ -178,7 +178,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println(DeletedBookMsg + book.Id)
+	log.Println(DeletedBookMsg + book.Id.Hex())
 	respondWithJson(w, http.StatusOK, map[string]string{Result: Success})
 }
 

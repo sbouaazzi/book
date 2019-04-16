@@ -30,6 +30,7 @@ const (
 	Error                    = "Error: "
 	EmptyString              = ""
 	Format                   = "%s\n"
+	InvalidIdMsg             = "Invalid id"
 	InvalidBookIdMsg         = "Invalid book id"
 	InvalidRequestPayloadMsg = "Invalid request payload"
 	Id                       = "id"
@@ -73,6 +74,13 @@ func GetAllBooks(w http.ResponseWriter, _ *http.Request) {
 // The function responds with a 400 status and a JSON error message for any system errors or validation errors.
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+
+	// catch error is entered Id is not Hex
+	if !bson.IsObjectIdHex(params[Id]) {
+		respondWithError(w, http.StatusBadRequest, InvalidIdMsg)
+		return
+	}
+
 	book, err := dao.FindById(params[Id])
 
 	if err != nil {
@@ -130,6 +138,12 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 // The function responds with a 400 status and a JSON error message for any system errors or validation errors.
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+
+	// catch error is entered Id is not Hex
+	if !bson.IsObjectIdHex(params[Id]) {
+		respondWithError(w, http.StatusBadRequest, InvalidIdMsg)
+		return
+	}
 	oldbook, _ := dao.FindById(params[Id])
 
 	defer r.Body.Close()
@@ -167,6 +181,13 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 // The function responds with a 400 status and a JSON error message for any system errors or validation errors.
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+
+	// catch error is entered Id is not Hex
+	if !bson.IsObjectIdHex(params[Id]) {
+		respondWithError(w, http.StatusBadRequest, InvalidIdMsg)
+		return
+	}
+
 	book, err := dao.FindById(params[Id])
 
 	if err != nil {

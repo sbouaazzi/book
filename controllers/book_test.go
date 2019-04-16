@@ -22,9 +22,6 @@ import (
 	"testing"
 )
 
-// BookDAO instance with MongoDB URL and 'BookMongo' Database
-var db = dao2.BookDAO{Server: "mongodb://book_mongodb_1:27017", Database: "BookMongo"}
-
 // test books reference for unit testing
 var b = models.Book{Id: bson.NewObjectId(), Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "0000", Rating: 1, Status: CheckedIn}
 var b1 = models.Book{Id: bson.NewObjectId(), Title: "Book Title1", Author: "", Publisher: "A Publisher1", PublishDate: "1111", Rating: 1, Status: CheckedIn}
@@ -35,7 +32,8 @@ var b4 = models.Book{Id: bson.NewObjectId(), Title: "Book Title4", Author: "An A
 // SetUp function
 //
 // Sets up test environment with stub book models inserted into the database.
-func SetUp() {
+func SetUp(db dao2.BookDAO) {
+	db.Connect()
 	_ = db.Insert(b)
 	_ = db.Insert(b1)
 	_ = db.Insert(b2)
@@ -46,19 +44,22 @@ func SetUp() {
 // TearDown function
 //
 // Tears down the database environment deleting the test books from the database.
-func TearDown() {
+func TearDown(db dao2.BookDAO) {
 	_ = db.Delete(b)
 	_ = db.Delete(b1)
 	_ = db.Delete(b2)
 	_ = db.Delete(b3)
 	_ = db.Delete(b4)
+	db.Close()
 }
 
 // TestAllUnitTests function
 //
 // Run all unit tests from this function to stay in the same DB session
 func TestAllUnitTests(t *testing.T) {
-	SetUp()
+	// BookDAO instance with MongoDB URL and 'BookMongo' Database
+	var db = dao2.BookDAO{Server: "mongodb://0.0.0.0:27017", Database: "BookMongo"}
+	SetUp(db)
 	GetAllBooksTest(t)
 	GetBookTest(t)
 	GetBadBookTest(t)
@@ -70,7 +71,7 @@ func TestAllUnitTests(t *testing.T) {
 	DeleteBadBookTest(t)
 	RespondWithErrorTest(t)
 	RespondWithJsonTest(t)
-	TearDown()
+	TearDown(db)
 }
 
 // GetAllBooksTest function

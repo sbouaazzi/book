@@ -10,10 +10,10 @@
 package controllers
 
 import (
-	dao2 "book/dao"
-	"book/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	dao2 "github.com/sbouaazzi/book/dao"
+	"github.com/sbouaazzi/book/models"
 	"gopkg.in/mgo.v2/bson"
 	"log"
 	"net/http"

@@ -15,7 +15,7 @@
 package controllers
 
 import (
-	"book/models"
+	"github.com/sbouaazzi/book/models"
 	"testing"
 )
 

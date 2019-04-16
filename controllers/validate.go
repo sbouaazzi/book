@@ -13,8 +13,8 @@
 package controllers
 
 import (
-	"book/models"
 	"github.com/asaskevich/govalidator"
+	"github.com/sbouaazzi/book/models"
 )
 
 // constants definitions

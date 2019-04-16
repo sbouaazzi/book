@@ -10,9 +10,9 @@
 package main
 
 import (
-	"book/controllers"
-	dao2 "book/dao"
 	"github.com/gorilla/mux"
+	"github.com/sbouaazzi/book/controllers"
+	dao2 "github.com/sbouaazzi/book/dao"
 	"log"
 	"net/http"
 )

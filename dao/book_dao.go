@@ -10,7 +10,7 @@
 package dao
 
 import (
-	"book/models"
+	"github.com/sbouaazzi/book/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"log"

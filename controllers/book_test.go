@@ -12,10 +12,10 @@
 package controllers
 
 import (
-	dao2 "book/dao"
-	"book/models"
 	"bytes"
 	"github.com/gorilla/mux"
+	dao2 "github.com/sbouaazzi/book/dao"
+	"github.com/sbouaazzi/book/models"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +23,7 @@ import (
 )
 
 // BookDAO instance with MongoDB URL and 'BookMongo' Database
-var mockDAO = dao2.BookDAO{Server: "mongodb://localhost:27017", Database: "BookMongo"}
+var db = dao2.BookDAO{Server: "mongodb://book_mongodb_1:27017", Database: "BookMongo"}
 
 // test books reference for unit testing
 var b = models.Book{Id: bson.NewObjectId(), Title: "Book Title", Author: "An Author", Publisher: "A Publisher", PublishDate: "0000", Rating: 1, Status: CheckedIn}
@@ -36,24 +36,22 @@ var b4 = models.Book{Id: bson.NewObjectId(), Title: "Book Title4", Author: "An A
 //
 // Sets up test environment with stub book models inserted into the database.
 func SetUp() {
-	mockDAO.Connect()
-	_ = mockDAO.Insert(b)
-	_ = mockDAO.Insert(b1)
-	_ = mockDAO.Insert(b2)
-	_ = mockDAO.Insert(b3)
-	_ = mockDAO.Insert(b4)
+	_ = db.Insert(b)
+	_ = db.Insert(b1)
+	_ = db.Insert(b2)
+	_ = db.Insert(b3)
+	_ = db.Insert(b4)
 }
 
 // TearDown function
 //
 // Tears down the database environment deleting the test books from the database.
 func TearDown() {
-	_ = mockDAO.Delete(b)
-	_ = mockDAO.Delete(b1)
-	_ = mockDAO.Delete(b2)
-	_ = mockDAO.Delete(b3)
-	_ = mockDAO.Delete(b4)
-	dao.Close()
+	_ = db.Delete(b)
+	_ = db.Delete(b1)
+	_ = db.Delete(b2)
+	_ = db.Delete(b3)
+	_ = db.Delete(b4)
 }
 
 // TestAllUnitTests function

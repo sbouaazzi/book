@@ -134,7 +134,7 @@ This repository contains a CRUD API to manage a list of Books
         ```
 
 ## Instructions
-_Prerequisites: Be sure to have the Go environment, MongoDB and Docker installed on the local machine in order for the project to run properly_
+_Prerequisites: Be sure to have the Go environment and Docker installed on the local machine in order for the project to run properly_
 
 In order to run this project from a docker container, please follow the following steps:
 
